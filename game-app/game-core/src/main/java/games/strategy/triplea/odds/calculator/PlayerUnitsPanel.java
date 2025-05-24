@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.triplea.java.collections.CollectionUtils;
 import org.triplea.java.collections.IntegerMap;
 import org.triplea.swing.SwingComponents;
@@ -53,12 +53,15 @@ public class PlayerUnitsPanel extends JPanel {
   }
 
   public List<Unit> getUnits() {
-    return unitPanels.stream().map(UnitPanel::getUnits).flatMap(Collection::stream).toList();
+    return unitPanels.stream()
+        .map(UnitPanel::getUnits)
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
   }
 
   /** Sets up components to an initial state. */
   public void init(
-      @NotNull final GamePlayer panelPlayer,
+      @Nonnull final GamePlayer panelPlayer,
       final List<Unit> units,
       final boolean isLandBattle,
       @Nullable final Territory territory) {
@@ -114,7 +117,7 @@ public class PlayerUnitsPanel extends JPanel {
    * @param units list of units to be populated
    */
   private List<UnitCategory> getAllUnitCategories(
-      @NotNull final GamePlayer panelPlayer, final List<Unit> units) {
+      @Nonnull final GamePlayer panelPlayer, final List<Unit> units) {
 
     final List<UnitCategory> allUnitCategories = new ArrayList<>();
 
@@ -139,7 +142,7 @@ public class PlayerUnitsPanel extends JPanel {
     final Set<UnitCategory> unitCategoriesWithUnits = UnitSeparator.categorize(units);
     for (final UnitCategory unitCategoryWithUnits : unitCategoriesWithUnits) {
       int categoryIndex = Collections.binarySearch(allUnitCategories, unitCategoryWithUnits);
-      if (categoryIndex > 0) {
+      if (categoryIndex >= 0) { // key was found
         allUnitCategories.get(categoryIndex).getUnits().addAll(unitCategoryWithUnits.getUnits());
       } else {
         allUnitCategories.add(unitCategoryWithUnits);
